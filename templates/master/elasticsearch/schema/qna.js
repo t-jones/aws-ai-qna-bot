@@ -161,6 +161,28 @@ module.exports={
                     maxLength:100,
                     propertyOrder:10
                 },
+                botRouting:{
+                    title:"Bot Routing",
+                    description:"Use QnABot as a supervisory Bot and route to other Lex/QnABots to handle the conversation. This configures a question for which QnABot should run as a supervisory Bot.",
+                    type:"object",
+                    propertyOrder:8,
+                    properties:{
+                        specialty_bot:{
+                            title:"Bot Routing: Specialty Bot Name or Lambda",
+                            description:"The name of the Specialty Bot to route requests to. Specialty Bot Name must start with \"QNA\". Can be a Lambda Function Name or ARN that will handle the conversation. Specified as \"Lambda::FunctionName\". Function name must start with \"QNA\".",
+                            type:"string",
+                            maxLength:100,
+                            propertyOrder:0
+                        },
+                        specialty_bot_name:{
+                            title:"A simple name for the Specialty Bot that can be used as a breadcrumb in a user interface",
+                            description:"Enter a string used as the Specialty Bot's simple name.",
+                            type:"string",
+                            maxLength:100,
+                            propertyOrder:1
+                        }
+                    }
+                },
             },
             required:["qid","q","a"]
         }
