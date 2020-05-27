@@ -101,7 +101,8 @@ module.exports = {
             "lex:PostText"
           ],
           "Resource": [
-            "arn:aws:lex:*:*:bot:QNA*"
+            "arn:aws:lex:*:*:bot:QNA*",
+            "arn:aws:lex:*:*:bot:QnA*",
           ]
         }]
       },

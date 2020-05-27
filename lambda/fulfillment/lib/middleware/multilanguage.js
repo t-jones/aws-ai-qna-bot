@@ -124,7 +124,34 @@ exports.set_multilang_env = async function (req) {
     return req;
 }
 
-exports.translateText = async function (inputText, sourceLang, targetLang) {
+async function translateText(inputText, sourceLang, targetLang) {
     const res = await get_translation(inputText, sourceLang, targetLang);
     return res.TranslatedText;
+}
+
+exports.translateText = translateText;
+
+exports.translate_res = async function (req, res) {
+    const locale = _.get(req, 'session.userLocale');
+    if (_.get(req._settings, 'ENABLE_MULTI_LANGUAGE_SUPPORT', "false").toLowerCase() === "true"){
+        if (_.get(res,"message")) {
+            res.message = await translateText(res.message,'en',locale);
+        }
+        if (_.get(res,"plainMessage")) {
+            res.plainMessage = await translateText(res.plainMessage,'en',locale);
+        }
+        if (_.get(res,"card")) {
+            res.card.title = await translateText(res.card.title,'en',locale);
+        }
+        if (_.get(res,"card.buttons")) {
+            res.card.buttons.forEach(async function (button) {
+                button.text = await multilanague.translateText(button.text,'en',locale);
+                //TODO Address multilanguage issues with translating button values for use in confirmation prompts
+                //Disable translate of button value
+                //button.value = await translate.translateText(button.value,'en',locale);
+            });
+            res.plainMessage = await translateText(res.plainMessage,'en',locale);
+        }
+    }
+    return res;
 }

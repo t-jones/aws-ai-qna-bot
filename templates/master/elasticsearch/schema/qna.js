@@ -165,7 +165,7 @@ module.exports={
                     title:"Bot Routing",
                     description:"Use QnABot as a supervisory Bot and route to other Lex/QnABots to handle the conversation. This configures a question for which QnABot should run as a supervisory Bot.",
                     type:"object",
-                    propertyOrder:8,
+                    propertyOrder:11,
                     properties:{
                         specialty_bot:{
                             title:"Bot Routing: Specialty Bot Name or Lambda",
@@ -180,6 +180,13 @@ module.exports={
                             type:"string",
                             maxLength:100,
                             propertyOrder:1
+                        },
+                        specialty_bot_alias:{
+                            title:"The Bot alias to use for the Specialty Bot",
+                            description:"Enter a string used as the Specialty Bot's alias.",
+                            type:"string",
+                            maxLength:100,
+                            propertyOrder:2
                         }
                     }
                 },

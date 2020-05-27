@@ -5,33 +5,7 @@
  */
 const _=require('lodash');
 const AWS = require('aws-sdk');
-var translate = require('./multilanguage.js');
-
-async function translate_res(req, res){
-    const locale = _.get(req, 'session.userLocale');
-    if (_.get(req._settings, 'ENABLE_MULTI_LANGUAGE_SUPPORT', "false").toLowerCase() === "true"){
-        if (_.get(res,"message")) {
-            res.message = await translate.translateText(res.message,'en',locale); 
-        }
-        if (_.get(res,"plainMessage")) {
-            res.plainMessage = await translate.translateText(res.plainMessage,'en',locale); 
-        }
-        if (_.get(res,"card")) {
-            res.card.title = await translate.translateText(res.card.title,'en',locale);
-        }
-        if (_.get(res,"card.buttons")) {
-            res.card.buttons.forEach(async function (button) {
-                button.text = await translate.translateText(button.text,'en',locale);
-                //TODO Address multilanguage issues with translating button values for use in confirmation prompts
-                //Disable translate of button value
-                //button.value = await translate.translateText(button.value,'en',locale);
-            });
-            res.plainMessage = await translate.translateText(res.plainMessage,'en',locale); 
-        }
-    }
-    return res;
-}
-
+const multilanguage = require('./multilanguage.js');
 /**
  * Call postText and use promise to return data response.
  * @param lexClient
@@ -194,7 +168,7 @@ async function processResponse(req, res, hook, msg) {
     res.plainMessage = res.plainMessage ? res.plainMessage : _.get(req, '_settings.ELICIT_RESPONSE_DEFAULT_MSG', 'Ok. ');
     
     // autotranslate res fields
-    res = await translate_res(req,res);
+    res = await multilanguage.translate_res(req,res);
 
     const resp = {};
     resp.req = req;

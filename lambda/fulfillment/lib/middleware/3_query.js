@@ -1,6 +1,7 @@
 var _=require('lodash')
 var util=require('./util')
-const lexRouter=require('./lexRouter');
+const elicitResponseBotRouter=require('./elicitResponseBotRouter');
+const specialtyBotRouter=require('./specialtyBotRouter');
 
 /**
  * This function identifies and invokes a lambda function that either queries elasticsearch for a
@@ -45,13 +46,40 @@ module.exports=async function query(req,res) {
                           chain to another question when elicitResponse completes
      */
     let specialtyArn = _.get(req,"session.specialtyLambda" ,undefined);
+    let specialtyBot = _.get(req,"session.specialtyBot" ,undefined);
+    let specialtyBotAlias = _.get(req,"session.specialtyBotAlias", "live");
     let queryLambdaArn = _.get(req,"session.queryLambda", undefined);
     let elicitResponse = _.get(req,"session.elicitResponse", undefined);
     let chainingConfig = _.get(req,"session.elicitResponseChainingConfig", undefined);
 
-    if (elicitResponse) {
+    if (specialtyBot) {
+        let resp = await specialtyBotRouter.routeRequest(req, res, specialtyBot, specialtyBotAlias);
+        if (resp.res.session.specialtyBotProgress === 'Complete' ||
+            resp.res.session.specialtyBotProgress === 'Failed') {
+            // Specialty bot has completed. See if we need to using chaining to go to another question
+            if (chainingConfig) {
+                console.log("Conditional chaining: " + chainingConfig);
+                // chainingConfig will be used in Query Lambda function
+                const arn = util.getLambdaArn(process.env.LAMBDA_DEFAULT_QUERY);
+                const postQuery = await util.invokeLambda({
+                    FunctionName: arn,
+                    req: resp.req,
+                    res: resp.res
+                });
+                // specialtyBot processing is done. Remove the flag for now.
+                postQuery.res.session.specialtyBotProgress = undefined;
+                console.log("After chaining the following response is being made: " + JSON.stringify(postQuery,null,2));
+                return postQuery;
+            } else {
+                // no chaining. continue on with response from standard fulfillment path.
+                resp.res.session.specialtyBotProgress = undefined;
+            }
+        }
+        console.log("No chaining. The following response is being made: " + JSON.stringify(resp,null,2));
+        return resp;
+    } else if (elicitResponse) {
         console.log('Handling elicitResponse');
-        let resp = await lexRouter.elicitResponse(req,res, elicitResponse);
+        let resp = await elicitResponseBotRouter.elicitResponse(req,res, elicitResponse);
         if (resp.res.session.elicitResponseProgress === 'Fulfilled' ||
             resp.res.session.elicitResponseProgress === 'ReadyForFulfillment') {
             console.log("Bot was fulfilled");
@@ -112,13 +140,16 @@ module.exports=async function query(req,res) {
     });
 
     /*
-     After standard query look for elicitResponse in question being returned and set session attributes
-     such that on next entry, response is sent to LexBot.
+     After standard query look for elicitResponse or specialtyBot in the question being returned and set session attributes
+     such that on next entry, response is sent to LexBot or specialtyBot.
      */
 
     const responsebot_hook = _.get(postQuery.res,"result.elicitResponse.responsebot_hook", undefined);
     const responsebot_session_namespace = _.get(postQuery.res,"result.elicitResponse.response_sessionattr_namespace", undefined);
     const chaining_configuration =_.get(postQuery.res,"result.conditionalChaining", undefined);
+    const specialtybot_hook = _.get(postQuery.res,"result.botRouting.specialty_bot", undefined);
+    const specialtybot_name = _.get(postQuery.res,"result.botRouting.specialty_bot_name", undefined);
+    const specialtybot_alias = _.get(postQuery.res,"result.botRouting.specialty_bot_alias", undefined);
     if (responsebot_hook && responsebot_session_namespace) {
         if (postQuery.res.session.elicitResponseLoopCount) {
             postQuery.res.session.elicitResponseLoopCount = 0;
@@ -127,6 +158,10 @@ module.exports=async function query(req,res) {
         postQuery.res.session.elicitResponseNamespace = responsebot_session_namespace;
         _.set(postQuery.res.session, postQuery.res.session.elicitResponseNamespace + ".boterror", undefined );
         postQuery.res.session.elicitResponseChainingConfig = chaining_configuration;
+    } else if (specialtybot_hook && specialtybot_name) {
+        postQuery.res.session.specialtyBot = specialtybot_hook;
+        postQuery.res.session.specialtyBotName = specialtybot_name;
+        postQuery.res.session.specialtyBotAlias = specialtybot_alias;
     }
 
     console.log("Standard path return from 3_query: " + JSON.stringify(postQuery, null, 2));
