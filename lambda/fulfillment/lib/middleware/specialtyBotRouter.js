@@ -7,6 +7,30 @@ const _=require('lodash');
 const AWS = require('aws-sdk');
 const multilanguage = require('./multilanguage.js');
 
+function getBotUserId(req) {
+    let tempBotUserID = _.get(req, "_userInfo.UserId", "nouser");
+    tempBotUserID = tempBotUserID.substring(0, 100); // Lex has max userId length of 100
+    return tempBotUserID;
+}
+
+async function lambdaClientRequester(name, req) {
+    const lambda = new AWS.Lambda();
+    const payload = {
+        req: {
+            request: "message",
+            inputText: _.get(req, "question"),
+            sessionAttributes: _.get(req, "sessionAttributes.specialtySessionAttributes", {}),
+            userId: getBotUserId(req)
+        }
+    }
+    const result = await lambda.invoke({
+        FunctionName: name,
+        InvocationType: "RequestResponse",
+        Payload: JSON.stringify(payload)
+    }).promise();
+    return result;
+}
+
 /**
  * Call postText and use promise to return data response.
  * @param lexClient
@@ -38,24 +62,33 @@ function lexClientRequester(lexClient,params) {
  * @returns {Promise<*>}
  */
 async function handleRequest(req, res, botName, botAlias) {
-    function mapFromSimpleName(botName) {
-        const bName = process.env[botName];
-        return bName ? bName : botName;
-    }
+    if (botName.toLowerCase().startsWith("lambda::")) {
+        // target bot is a Lambda Function
+        const lambdaName = botName.split("::")[1];
+        console.log("Calling Lambda:", lambdaName);
+        let response = await lambdaClientRequester(lambdaName, req);
+        console.log("lambda response: " + JSON.stringify(response,null,2));
+        return response;
+    } else {
+        function mapFromSimpleName(botName) {
+            const bName = process.env[botName];
+            return bName ? bName : botName;
+        }
 
-    let tempBotUserID = _.get(req,"_userInfo.UserId","nouser");
-    tempBotUserID = tempBotUserID.substring(0, 100); // Lex has max userId length of 100
-    const lexClient = new AWS.LexRuntime({apiVersion: '2016-11-28'});
-    const params = {
-        botAlias: botAlias,
-        botName: mapFromSimpleName(botName),
-        inputText: _.get(req,"question"),
-        sessionAttributes: _.get(req,"sessionAttributes.specialtySessionAttributes",{}),
-        userId: tempBotUserID,
-    };
-    console.log("Lex parameters: " + JSON.stringify(params));
-    const response = await lexClientRequester(lexClient,params);
-    return response;
+        let tempBotUserID = _.get(req, "_userInfo.UserId", "nouser");
+        tempBotUserID = tempBotUserID.substring(0, 100); // Lex has max userId length of 100
+        const lexClient = new AWS.LexRuntime({apiVersion: '2016-11-28'});
+        const params = {
+            botAlias: botAlias,
+            botName: mapFromSimpleName(botName),
+            inputText: _.get(req, "question"),
+            sessionAttributes: _.get(req, "sessionAttributes.specialtySessionAttributes", {}),
+            userId: getBotUserId(req),
+        };
+        console.log("Lex parameters: " + JSON.stringify(params));
+        const response = await lexClientRequester(lexClient, params);
+        return response;
+    }
 };
 
 function endUseOfSpecialtyBot(req, res, welcomeBackMessage) {
