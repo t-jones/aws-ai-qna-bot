@@ -1,18 +1,57 @@
 /**
  *
- * Specialty Bot Router. Given the name of a bot, Call Lex bot using 'live' alias and pass input text.
- * Handle response from Lex Bot and update session attributes as needed.
+ * Specialty Bot Router. Interacts with either another Lex Bot to route messages or calls a Lambda function that
+ * provides routing service to another non Lex Bot. Handles response from either Lex or Lambda function, encapsulates
+ * session attributes, and returns results to QnABot fulfillment handler.
  */
 const _=require('lodash');
 const AWS = require('aws-sdk');
 const multilanguage = require('./multilanguage.js');
 
+/**
+ * Identifies the user to pass on for requests to Lex or other bots
+ * @param req
+ * @returns {string}
+ */
 function getBotUserId(req) {
     let tempBotUserID = _.get(req, "_userInfo.UserId", "nouser");
     tempBotUserID = tempBotUserID.substring(0, 100); // Lex has max userId length of 100
     return tempBotUserID;
 }
 
+/**
+ * Determines if provided val is a String
+ * @param val
+ * @returns {boolean}
+ */
+function isString(val) {
+    return ( (typeof val === 'string' || val instanceof String) ? true : false);
+}
+
+/**
+ * Make requests to a Lambda function acting as a Bot Router. The Lambda is called with the following json payload
+ * req {
+ *     request: "message" // String. Type of request. Placeholder for future request types
+ *     inputText: "" // String. Message target should process
+ *     sessionAttributes: {} // Object. Session attributes as provided by target on previous call.
+ *     userId: "" // String. Identifies the user from QnABot user.
+ * }
+ *
+ * The response json payload should conform to the following
+ *
+ * { 	response: "message", "othersTBD"
+ *	    status: "success", "failed"
+ *	    message: <String>,
+ *      messageFormat:  "PlainText", "CustomPayload", "SSML", "Composite"
+ *	    sessionAttributes: Object,
+ *	    sessionAttributes.appContext.altMessages.ssml: <String>,
+ *      sessionAttributes.appContext.altMessages.markdown: <String> 
+ * }
+ *
+ * @param name
+ * @param req
+ * @returns Payload object returned by Bot Router
+ */
 async function lambdaClientRequester(name, req) {
     const lambda = new AWS.Lambda();
     const payload = {
@@ -28,11 +67,13 @@ async function lambdaClientRequester(name, req) {
         InvocationType: "RequestResponse",
         Payload: JSON.stringify(payload)
     }).promise();
-    return result;
+    let obj = JSON.parse(result.Payload);
+    console.log("lambda payload obj is : " + JSON.stringify(obj,null,2));
+    return obj;
 }
 
 /**
- * Call postText and use promise to return data response.
+ * Call Lex based target using postText and use promise to return data response.
  * @param lexClient
  * @param params
  * @returns {*}
@@ -53,8 +94,8 @@ function lexClientRequester(lexClient,params) {
 }
 
 /**
- * Setup call to Lex including user ID, input text, botName, botAlis. It is an async function and
- * will return the response form Lex.
+ * Setup call to Lex or Lambda Bot Router including user ID, input text, botName, botAlis. It is an async function and
+ * will return the response from either Lex or Lambda based Bot Router.
  * @param req
  * @param res
  * @param botName
@@ -91,6 +132,13 @@ async function handleRequest(req, res, botName, botAlias) {
     }
 };
 
+/**
+ * Function that adjusts state to terminate use of a specialty bot
+ * @param req
+ * @param res
+ * @param welcomeBackMessage
+ * @returns {{}}
+ */
 function endUseOfSpecialtyBot(req, res, welcomeBackMessage) {
     delete res.session.specialtyBot;
     delete res.session.specialtyBotName;
@@ -115,7 +163,7 @@ function endUseOfSpecialtyBot(req, res, welcomeBackMessage) {
 
 /**
  * Main processing logic to handle request from 3_query.js and process response from Lex. Handles
- * dialogState response from Lex.
+ * dialogState response from Lex. Identifies if the user has issued an exit request.
  * @param req
  * @param res
  * @param hook
@@ -143,7 +191,7 @@ async function processResponse(req, res, hook, alias) {
         if (botResp.message) {
             let ssmlMessage = undefined;
             if (botResp.sessionAttributes && botResp.sessionAttributes.appContext) {
-                const appContext = JSON.parse(botResp.sessionAttributes.appContext);
+                const appContext = ( isString(botResp.sessionAttributes.appContext) ? JSON.parse(botResp.sessionAttributes.appContext) : botResp.sessionAttributes.appContext);
                 // if alt.messsages contains SSML tags setup to return ssmlMessage
                 if (appContext.altMessages.ssml && appContext.altMessages.ssml.includes("<speak>")) {
                     ssmlMessage = appContext.altMessages.ssml;
