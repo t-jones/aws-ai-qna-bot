@@ -49,10 +49,11 @@ module.exports=async function query(req,res) {
     let specialtyBot = _.get(req,"session.specialtyBot" ,undefined);
     let specialtyBotAlias = _.get(req,"session.specialtyBotAlias", "live");
     let queryLambdaArn = _.get(req,"session.queryLambda", undefined);
-    let elicitResponse = _.get(req,"session.elicitResponse", undefined);
-    let chainingConfig = _.get(req,"session.elicitResponseChainingConfig", undefined);
+    let elicitResponse = _.get(req,"session.qnabotcontext.elicitResponse.responsebot", undefined);
+    let chainingConfig = _.get(req,"session.qnabotcontext.elicitResponse.chainingConfig", undefined);
 
     if (specialtyBot) {
+        console.log('Handling specialtyBot');
         let resp = await specialtyBotRouter.routeRequest(req, res, specialtyBot, specialtyBotAlias);
         if (resp.res.session.specialtyBotProgress === 'Complete' ||
             resp.res.session.specialtyBotProgress === 'Failed') {
@@ -80,8 +81,8 @@ module.exports=async function query(req,res) {
     } else if (elicitResponse) {
         console.log('Handling elicitResponse');
         let resp = await elicitResponseBotRouter.elicitResponse(req,res, elicitResponse);
-        if (resp.res.session.elicitResponseProgress === 'Fulfilled' ||
-            resp.res.session.elicitResponseProgress === 'ReadyForFulfillment') {
+        let progress = _.get(resp,"res.session.qnabotcontext.elicitResponse.progress", undefined);
+        if (progress === 'Fulfilled' || progress === 'ReadyForFulfillment') {
             console.log("Bot was fulfilled");
             // LexBot has completed. See if we need to using chaining to go to another question
             if (chainingConfig) {
@@ -94,12 +95,12 @@ module.exports=async function query(req,res) {
                     res: resp.res
                 });
                 // elicitResponse processing is done. Remove the flag for now.
-                postQuery.res.session.elicitResponseProgress = undefined;
+                _.set(postQuery,'res.session.qnabotcontext.elicitResponse.progress',undefined);
                 console.log("After chaining the following response is being made: " + JSON.stringify(postQuery,null,2));
                 return postQuery;
             } else {
                 // no chaining. continue on with response from standard fulfillment path.
-                resp.res.session.elicitResponseProgress = undefined;
+                _.set(res,'session.qnabotcontext.elicitResponse.progress',undefined);
             }
         }
         console.log("No chaining. The following response is being made: " + JSON.stringify(resp,null,2));
@@ -151,17 +152,17 @@ module.exports=async function query(req,res) {
     const specialtybot_name = _.get(postQuery.res,"result.botRouting.specialty_bot_name", undefined);
     const specialtybot_alias = _.get(postQuery.res,"result.botRouting.specialty_bot_alias", undefined);
     if (responsebot_hook && responsebot_session_namespace) {
-        if (postQuery.res.session.elicitResponseLoopCount) {
-            postQuery.res.session.elicitResponseLoopCount = 0;
+        if (_.get(postQuery,'res.session.qnabotcontext.elicitResponse.loopCount')) {
+            _.set(postQuery,'res.session.qnabotcontext.elicitResponse.loopCount',0)
         }
-        postQuery.res.session.elicitResponse = responsebot_hook;
-        postQuery.res.session.elicitResponseNamespace = responsebot_session_namespace;
+        _.set(postQuery,'res.session.qnabotcontext.elicitResponse.responsebot',responsebot_hook)
+        _.set(postQuery,'res.session.qnabotcontext.elicitResponse.namespace',responsebot_session_namespace)
+        _.set(postQuery,'res.session.qnabotcontext.elicitResponse.chainingConfig',chaining_configuration)
         _.set(postQuery.res.session, postQuery.res.session.elicitResponseNamespace + ".boterror", undefined );
-        postQuery.res.session.elicitResponseChainingConfig = chaining_configuration;
     } else if (specialtybot_hook && specialtybot_name) {
-        postQuery.res.session.specialtyBot = specialtybot_hook;
-        postQuery.res.session.specialtyBotName = specialtybot_name;
-        postQuery.res.session.specialtyBotAlias = specialtybot_alias;
+        _.set(postQuery,'res.session.postQuery.res.session.specialtyBot', specialtybot_hook);
+        _.set(postQuery,'res.session.specialtyBotName', specialtybot_name);
+        _.set(postQuery,'res.session.specialtyBotAlias', specialtybot_alias);
     }
 
     console.log("Standard path return from 3_query: " + JSON.stringify(postQuery, null, 2));
