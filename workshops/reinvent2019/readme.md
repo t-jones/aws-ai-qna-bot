@@ -34,14 +34,11 @@ During the workshop, AWS staff will give you a high-level overview of the labs a
 * **Step 1:** [Deploying your very own QnABot](#step-1---lets-begin-and-deploy-a-working-qnabot)
 * **Step 2:** [Manage questions, answers, test the simple bot](#step-2---manage-questions-answers-and-test-using-the-client-ui)
 * **Step 3:** [Integrate on your WebSite](#step-3---integrate-qnabot-into-your-website)
-* **Step 4:** [Integrate QnABot into an Amazon Connect Call Center](#step-4---integrate-qnabot-into-an-amazon-connect-call-center)
-* **Step 5:** [Integrate Alexa](#step-5---integrate-alexa)
-* **Step 6:** [Integrate SMS](#step-6---integrate-sms)
-* **Step 7:** [Monitor Usage in Kibana](#step-7---monitor-usage-with-kibana-and-cloudwatch)
-* **Step 8:** [Customize with Lambda](#step-8---customize-with-lambda)
-* **Step 9:** [Kendra Fallback Search](#step-9---extending-qnabot-to-leverage-enterprise-search-with-kendra)
-* **Step 10:** [Multiple Languages](#step-10---supporting-multiple-languages-in-qnabot)
-* **Step 11:** [New QnABot features in 2.4.0](#step-9---new-features)
+* **Step 4:** [Monitor Usage in Kibana](#step-4---monitor-usage-with-kibana-and-cloudwatch)
+* **Step 5:** [Customize with Lambda](#step-5---customize-with-lambda)
+* **Step 6:** [Kendra Fallback Search](#step-6---extending-qnabot-to-leverage-enterprise-search-with-kendra)
+* **Step 7:** [Multiple Languages](#step-7---supporting-multiple-languages-in-qnabot)
+* **Step 8:** [New QnABot features in 2.4.0](#step-8---new-features)
 * **Cleanup** [Put everything away nicely](#workshop-cleanup)
 
 ### Conventions:
@@ -70,22 +67,6 @@ sure everything is cleaned up and avoid unnecessary charges.
 * * *
 
 ## Step 1 - Let's begin and deploy a working QnABot
-
-### You have an important choice to make at this point of the workshop
-
-#### You are Not At reInvent (Most likely) or you wish to deploy QnABot in your own AWS account
-
-- Follow the steps in step 1A below and then go on to Step 2 [Manage questions, answers, test the simple bot](#step-2---manage-questions-answers-and-test-using-the-client-ui) (Note this part of the setup will take ~25 minutes to complete)
-
-#### You are attending at reInvent 2019
-
-- Jump forward to Step 1B below and ***DO NOT run Step 1A***. 
-
-## Step 1A
-
-### Workshop Setup:
-
-You've found the AWS QnABot open source project and want to test this as a possible vehicle to implement your chatbot.
 
 1) Log into the AWS Management Console using Chrome or Firefox and select **US East (N.Virginia)** for your [AWS region](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html).
 
@@ -119,11 +100,6 @@ The CloudFormation template will launch the following:
 ![CloudFormation Starting Stack](images/00-arch-b.png)
 
 ### Checkpoint:
-
-This Checkpoint only applies to step 1A where you are installing QnABot from a CloudFormation template into your own account.
-
-If you are completing step 1B please proceed to running the commands below starting with Elasticsearch Service. 
-You will not need to wait 25 minutes for setup to complete as this stack has been pre-installed. 
 
 If you have just launched the CloudFormation stack, it will take 25 minutes to complete.  Periodically check on the stack creation process in the 
 CloudFormation Dashboard. If no stack shows up immediately, click the refresh button at the top right hand corner of 
@@ -184,82 +160,6 @@ Fore more information on the stack this is launching refer to the AWS QnABot at 
 
 [*^ back to top*](#solar-association-deploying-and-customizing-a-ready-made-question-and-answer-bot)
 
-## Step 1B
-
-### You are attending at reInvent
-
-Congratulations on attending re:Invent 2019. We provisioned an AWS account that you
-can use during this workshop with an install of QnABot. You can log into this AWS account using the hash code 
-handed out to you as you entered the workshop. Navigate to:
-
-[Event Enginge Dashboard](https://dashboard.eventengine.run/)
-
-Log into the AWS console using the links provided at EventEngine. 
-
-The setup of QnABot is complete except for one small detail. 
-
-The normal install of QnABot will send via email a url to the QnABot Designer UI along with the temporary 
-password that has been set for you. You would normally use this link to reset the Admin password for the
-QnABot Designer UI. Since QnABot was setup ahead of time you will need to manually reset the Content Designer UI Admin 
-user password to a value you specify. You will be setting a new temporary password that will need to be changed
-the first time you login to the QnABot Designer UI. 
-
-### Setting a new temporary password for the Content Designer UI for your EventEngine Supplied AWS Account
-
-Login to the EventEngine supplied AWS Account and provision a Cloud9 IDE. If you have not used Cloud9 IDE before, 
-follow theses steps which are also covered again in Step 3. 
-
-We are going to use the [AWS Cloud9 IDE](https://aws.amazon.com/cloud9/ "Cloud9") to assist us to reset the password.
-Perform the following to setup a new AWS Cloud9 Environment. Note: You will not need to perform this again in step 3. 
-
-#### Cloud9 Setup
-   
-1) Log into the AWS Console using your AWS Account
-
-2) Set your region to N. Virginia (us-east-1)
-
-3) Navigate to the Cloud9 Service
-
-4) Click on create environment
-
-5) Give this a name and description of <pre>QnABotWorkshop</pre>
-
-6) Click Next step
-
-7) Use the default of Create a new instance for environment (EC2)
-
-8) Use the default of t2.micro
-
-9) Use the default of Cost-saving setting - After 30 minutes (default)
-
-10) Click Next step
-
-11) Click Create environment
-   
-Your AWS Cloud9 environment will begin to be setup. Once its ready continue with the following.
-
-In the Cloud9 console, open a new Terminal window using the "+" button. 
-
-From this window perform the following steps.
-
-List the Amazon Cognito user pool that has been provisioned for you. 
-
-``` 
-aws cognito-idp list-user-pools --max-results 5
-```
-This command outputs json. Looks for that attributes named "Id" and "Name".  similar to
-``` 
-"Id": "us-east-1_tdc8N6oyZ",
-```
-Next execute the command below. You can specify any password you wish although it should be at least 
-8 characters in length, have at least one uppercase letter, one lowercase letter, one number, and one 
-special character. An acceptable password is "MyPassword2019_" as shown in the
-command. This password will be required when you login to the designer UI later in step 2 the first time. This 
-command will set a new temporary password that you will change the first time you login to the QnABot Designer UI.
-``` 
-aws cognito-idp admin-set-user-password --user-pool-id [YourUserPoolIdFromJson] --username Admin --password MyPassword2019_
-```
-[*^ back to top*](#solar-association-deploying-and-customizing-a-ready-made-question-and-answer-bot)
 * * *
 
 ## Step 2 - Manage questions, answers, and test using the client ui
@@ -374,8 +274,6 @@ Solar Association does not yet have a website and you've been tasked to create o
 website with just two files using Amazon S3 to host the website. The two files will be index.html and solar.png. 
 
 We are going to use the [AWS Cloud9 IDE](https://aws.amazon.com/cloud9/ "Cloud9") to assist us. 
-
-If you have already setup Cloud9 in Step 1B you can skip these Cloud9 setup instructions.  If not, perform the following to setup a new AWS Cloud9 Environment. 
 
 #### Cloud9 Setup
    
@@ -644,226 +542,7 @@ and buttons.
 [*^ back to top*](#solar-association-deploying-and-customizing-a-ready-made-question-and-answer-bot)
 * * *
 
-## Step 4 - Integrate QnABot into an Amazon Connect call center
-
-### Here's what you're going to work on in step 4: Create an Amazon Connect call center and wire in the QnABot bot.  
-  
-1) Open Connect [console:](https://console.aws.amazon.com/connect)  
-
-    ![Lab4-connect-001](images/Lab4-connect-001.png)
-
-2) Add an instance - I used 'qnabot' as the name, but you will have to use a globally unique name, e.g.: qnabot-*yourname*  
-
-    ![Lab4-connect-002](images/Lab4-connect-002.png)
-
-3) Skip the 'create new administrator' step - we can always get to administrative functions from AWS console.  
-  
-    ![Lab4-connect-003](images/Lab4-connect-003.png)
-  
-4) Choose to handle incoming calls with Amazon Connect  
-  
-    ![Lab4-connect-004](images/Lab4-connect-004.png)  
-  
-5) Accept defaults for Data Storage, and choose 'Create Instance' on the Review and Create page:  
-  
-    ![Lab4-connect-005](images/Lab4-connect-005.png)
-  
-6) When the Success screen comes up, choose "Get Started"  
-  
-    ![Lab4-connect-006](images/Lab4-connect-006.png)  
-  
-7) And "Let's Go!"  
-  
-    ![Lab4-connect-007](images/Lab4-connect-007.png)
-  
-8) Claim a phone number.. Choose 'United States', 'Direct Dial' or 'Toll Free', and select a number from the list offered. Then 'Next':  
-  
-    ![Lab4-connect-008](images/Lab4-connect-008.png)
-  
-9) Play with the default call center as suggested. Or just choose 'Continue' to get on with integrating QnABot.  
-  
-    ![Lab4-connect-009](images/Lab4-connect-009.png)
-  
-
-10) Now we must make the QnABot accessible to our new call center. Open the Amazon Connect console in a new tab (https://console.aws.amazon.com/connect), select our new call center, choose "Contact Flows" and add the QnABot Lex bot.
-
-    ![Lab4-connect-010](images/Lab4-connect-020.png)
-  
-11) Go back to the call center admin page. From the Dashboard view, select 'Contact flows':  
-  
-    ![Lab4-connect-010](images/Lab4-connect-010.png)
-  
-12) then 'Create contact flow'  
-  
-    ![Lab4-connect-011](images/Lab4-connect-011.png)
-  
-13) Enter contact flow name, eg: "QnaBot"  
-  
-    ![Lab4-connect-012](images/Lab4-connect-012.png)
-  
-14) From the Cloud9 IDE, open the workshops/reinvent2019/connect-assets folder and download the qnabot-sample file 
-to your local system.
-
-15) Back in the Contact Flow you just created, Click on the Down Arrow next to Save, and then select Import(beta) and 
-load the sample contact flow you just downloaded to your system. After loading the contact flow it will look similar
-to the image below. 
-
-```
-~/environment/workshops/reinvent2019/connect-assets-qnabot-sample
-```
-
-![Lab4-connect-023](images/Lab4-connect-023.png)  
-
-This flow contains a number of items that drive the logic in Connect. You'll notice the use of 'Get customer input' to
-interact with the QnABot. This widget is used twice in the contact flow. You need to update the Name of the bot 
-used by the flow and the Intents which are used within the bot. The sample contact flow needs to be updated. 
-
-To do that first open up the AWS Lex Console so that you an obtain the intent names for your QnABot.
-
-Then click on each of the Get customer input widgets. First change the Bot it is using. It should automatically show 
-the available QnABot.
-
-Next in the AWS Lex Console click on the QnABot. It will open and show you the two intents associated with the bot. 
-You'll need to cut and paste each intent name from the AWS Lex Console for QnABot into the intents section in the 'Get 
-customer input' widget. Update both intents. Be sure to save the changes to each widget. 
-
-You'll also notice the use of the "Disconnect / hang up" widget at the end of the call flow. 
-
-In this example, we have the Connect call flow looping back to QnABot. The call flow sets a Lex attribute named 
-connectKeepAlive to true on each iteration. QnABot can disconnect this loop by setting the attribute named 
-connectKeepAlive to false when the bot wishes to disconnect. 
-
-To set connectKeepAlive to false you can use the following "HandleBar" template to set a session attribute. 
-
-```
-{{setSessionAttr 'connectKeepAlive' 'false'}}
-```
-
-The sample contact flow looks for this attribute and loops back to QnABot as long as the attribute is true. To 
-implement this disconnect, add a new question to QnABot. The question should be "Goodbye". The answer should be
-
-```
-{{setSessionAttr 'connectKeepAlive' 'false'}}Goodbye. Thanks for calling.
-```
-
-
-This is a very simple example. Sometimes one will implement additional Lex bots to prompt for Yes/No answers directly
-within Connect.
-
-14) Finally save the Contact flow and then publish the Contact flow. 
-  
-15) Go to "Routing"→"Phone numbers":  
-  
-    ![Lab4-connect-017](images/Lab4-connect-017.png)
-  
-16) Choose the phone number to open the Edit Phone number form. Select the "QnABot" contact flow that we just created, and choose 'Save'. 
-  
-    ![Lab4-connect-018](images/Lab4-connect-018.png)
-  
-  
-17) Try it now... Call the phone number for your new call center, and ask QnABot a question (ideally a question that you already entered into the Designer!)  
-    * Note - It takes a little bit of time before the new contact flow is ready. If you
-    get the default contact flow, wait 30 seconds or so and try again.  
-  
-### Checkpoint:
-
-Solar Association now has a phone number that can be used to answer questions configured
-into the bot. Yay. Cross that off the list. 
-  
-[*^ back to top*](#solar-association-deploying-and-customizing-a-ready-made-question-and-answer-bot)
-* * *
-  
-## Step 5 - Integrate Alexa
-
-### Here's what you're going to work on in step 5: Implement your new QnA bot as an Alexa skill.  
-  
-QnABot also works with Alexa, allowing your users to get answers from your content via any Alexa enabled device, including Amazon FireTV, Amazon Dash Wand, and any of the Amazon Echo family of devices.
-  
-1) To enable Alexa, first create an Alexa skill for QnABot using the Amazon Developer Console. QnABot can’t automatically create the Alexa skill at this time, so we’ve provided instructions. Log in to the QnABot Content Designer (as explained earlier), and choose Alexa from the tools menu ( ☰ ):  
-
-    ![Lab5-alexa-001](images/Lab5-alexa-001.png)
-  
-
-### Checkpoint:
-
-Cool. Now you can ask Sun questions using your Alexa Skill and keep these easily updated.
-
-[*^ back to top*](#solar-association-deploying-and-customizing-a-ready-made-question-and-answer-bot)
-
-* * *
-  
-## Step 6 - Integrate SMS:
-
-### Here's what you're going to work on in step 6:
-
-* Setup a new Twilio free trial account
-* Acquire a new phone number to send messages to
-* Setup the Twilio channel for QnABot 
-* Setup Twilio with a WebHook to send messages via Lex to QnABot
-* Test out the integration
-
-The first item to complete is to setup a free trail account at Twilio. This trial account will provide enough
-resource to perform a limited experiment with the integration from a single verified phone number . 
-
-1)Navigate to the following URL
-  [Twilio Account Signup](https://www.twilio.com/try-twilio)
-2) Provide the account details and start your trial.
-  ![Lab6-twilio-trial-1](images/Lab6-twilio-trial-1.png "Trial SignUp")
-3) Verify the new account setup via the email Twilio sends.
-4) Verify your phone number using the code sent to you.
-  ![Lab6-twilio-trial-1](images/Lab6-twilio-trial-9.png "Verify")
-5) Select Yes for "Do you write code?"
-6) Select NODE.JS
-7) Select "Use Twilio in a project"
-8) Select "Send or receive a SMS" for "What do you want to do first?"
-
-Your free Trial Account should now be setup. 
-![Lab6-twilio-trial-1](images/Lab6-twilio-trial-8.png "Trial SignUp")
-
-From your Twilio project dashboard 
-
-1) Obtain a Trial Number
-![Lab6-twilio-trial-2](images/Lab6-twilio-trial-2.png "Trial Number")
-2) Find your ACCOUNT SID and AUTH TOKEN
-![Lab6-twilio-trial-3](images/Lab6-twilio-trial-3.png "Trial Number")
-
-Navigate to the Amazon Lex Console
-
-1) Open your QnABot
-2) Select the channels tab
-3) Select the Twilio channel on the left
-4) Fill in the Twilio channel properties including the Account SID and Auth Token obtained from Twilio. Click on Activate.
-![Lab6-twilio-trial-4](images/Lab6-twilio-trial-4.png "Form Properties")
-
-At the bottom of your Amazon Lex Twilio channel properties page, copy the next Endpoint URL
-![Lab6-twilio-trial-5](images/Lab6-twilio-trial-5.png "Channel Properties")
-
-Back in the Twilio page
-1) Click on the all products and services button "..."
-2) Open the Phone Numbers page under the Super Network menu item
-3) Click on your active number
-![Lab6-twilio-trial-6](images/Lab6-twilio-trial-6.png "Channel Properties")
-4) Scroll down and file in the AWS endpoint url as the WebHook for Messaging
-![Lab6-twilio-trial-7](images/Lab6-twilio-trial-7.png "WebHook")
-5) Click on Save
-
-Test out your integration. 
-1) Open your message app on your mobile device
-2) Send a question to your new Twilio phone number
-3) QnABot should respond with the appropriate answer
-
-### Checkpoint:
-
-Super. If everything is setup, now you have a text message based channel for your QnABot. You can text your questions
-to the bot. 
-
-If you have time and a valid Facebook app, you can integration a Facebook channel as well. 
-
-[*^ back to top*](#solar-association-deploying-and-customizing-a-ready-made-question-and-answer-bot)
-
-* * *
-  
-## Step 7 - Monitor Usage with Kibana and CloudWatch:
+## Step 4 - Monitor Usage with Kibana and CloudWatch:
 
 ### Here's what you're going to work on in step 7: 
 * Enable Feedback in QnaBot - By default feedback is not enabled in QnABot. This step will
@@ -970,7 +649,7 @@ your bot and how to look for questions that the system is not matching against.
 
 * * *
 
-## Step 8 - Customize with Lambda:
+## Step 5 - Customize with Lambda:
 
 ### Here's what you're going to work on in step 8:
 
@@ -986,7 +665,7 @@ To do this we are going to use a public api from [NASA API](https://api.nasa.gov
 to obtain information on Solar Flares.
 
 
-[NASA API Example](https://api.nasa.gov/DONKI/FLR?startDate=2017-01-01&endDate=2019-12-30&api_key=DEMO_KEY "Example call")
+[NASA API Example](https://api.nasa.gov/DONKI/FLR?startDate=2020-01-01&endDate=2019-12-30&api_key=DEMO_KEY "Example call")
 
 The API takes two parameters, startDate and endDate. endDate defaults to current UTC Time 
 so we can leave this empty unless we want to provide a question and answer for a specific
@@ -1036,7 +715,7 @@ code provided below.
 #### TODO 1 Calling the NASA API after setting up the parameters used in the url. Log the output if debug is enabled.
 <pre>
     debug("Calling via axios");
-    const finalUrl = baseurl + '?startDate=2017-01-01' + '&api_key=' + process.env.api_key;
+    const finalUrl = baseurl + '?startDate=2020-01-01' + '&api_key=' + process.env.api_key;
     let res = await axios(finalUrl, axiosConfig);
     debug("RESPONSE RECEIVED: ", JSON.stringify(res.data, null, 2));
 </pre>
@@ -1229,7 +908,7 @@ ids to update are sun.8 and sun.2.
 
 * * *
 
-## Step 9 - Extending QnABot to leverage Enterprise Search with Kendra:
+## Step 6 - Extending QnABot to leverage Enterprise Search with Kendra:
 
 QnABot version 2.6.0 optionally supports integration with Amazon Kendra. For the workshop perform the following steps:
 
@@ -1319,7 +998,7 @@ after that charges to the account will occur.***
  
 * * *
 
-## Step 10 - Supporting multiple languages in QnABot:
+## Step 7 - Supporting multiple languages in QnABot:
 
 QnABot version 2.6.0 supports use of multiple languages. 
 
@@ -1452,16 +1131,32 @@ g) Invoke the input "reset language" and then 'Tell me about the Sun'. You shoul
 
 * * *
 
-## Step 11 - New Features:
+## Step 8 - New Features:
 
-QnABot version 2.4.0 provides some significant new features.
 
-November 2019 (v2.4.0) – Customizable configuration settings, minimized need to rebuild Lex bot when adding new content, 
-improved accuracy using keyword filters, configurable response when answer isn’t found, improved handling of user 
-feedback with integrated thumbs up/down buttons in web client, automated question testing in Content Designer, 
-support variable substitution and conditional answers using ‘handlebars’ templates in Content Designer.
+* November 2019 (v2.4.0) – Customizable configuration settings, minimized need to rebuild Lex bot when adding new content, improved accuracy using keyword filters, configurable response when answer isn’t found, improved handling of user feedback with integrated thumbs up/down buttons in web client, automated question testing in Content Designer, support variable substitution and conditional answers using ‘handlebars’ templates in Content Designer.
+
+* February 2020 (v2.6.0) – Use Amazon Kendra to find answers from document sources when a curated answer can’t be found in the QnABot Elastic Search index,  and introducing support for interaction in multiple languages.
+
+* March 2020 (v3.0.0) – New ContentDesigner settings menu for changing QnABot configuration, new Elicit Response feature allows QnABot to support data collection and triage by asking questions and processing the answers,  new ‘Document Chaining’ rules allow QnABot to automatically advance to the next question with support for conditional branching, interaction in multiple languages now enhanced with automatic translations and support for multiple language Alexa voice skills, and the ability to simplify tuning by disabling use of the answer field in scoring results.
+
+* April 2020 (v3.0.3) – Improved concurrency scaling using Lex versions and aliases, extensible Document Chaining rules using Lambda functions, redact sensitive information from QnABot logs and metrics using configurable regular expressions, new example package for using Amazon Connect call-back to transfer QnABot user to a human.
+
+* June 2020 (v4.0.0) – Update to Elasticsearch 7.4, improved question matching accuracy and tuning, tolerance for typos and minor spelling errors with fuzzy matching setting, easier troubleshooting when using voice or multi-language support with new debug setting, SSML support when using Amazon Connect, improvements to Amazon Kendra integration, new QNAFreeText feature to capture free-form input when using ElicitResponse, full upgrade support without data loss when upgrading from previous versions.
+
+* July 2020 (v4.1.0) – Encryption at rest installation option, private installation option requires Cognito user authentication for web client access, option to enforce user identity token verification, Amazon Kendra integration supports ‘best answer’ and bolded highlights in markdown responses, sentiment is now detected and made available to use in conditional chaining rules / handlebars / lambda hooks, the new QNAFreeText feature now provides additional ‘Sentiment’ slot value, Kibana dashboard now shows sentiment distribution in the requests histogram and provides more fine grain identification of Amazon Lex client types (Lex Web UI, Amazon Connect, Twilio), ElicitResponse state is now encapsulated in a single session variable ‘qnabotcontext’ to simplify Amazon Connect contact flow design when using ElicitResponse, new session attributes now provided for clients (eg Amazon Connect) to use – qnabot_qid and qnabot_gotanswer.
+
+* August 2020 (v4.2.0) – Amazon Kendra NLP available as optional alternative to Elasticsearch queries for better accuracy and easier tuning, Kendra fallback supports shorter responses when using voice channels, Elasticsearch updated to v7.7, new handlebars ‘getSessionAttr’ helper function, document chaining rule Lambda functions can set session attributes by returning modified event object (like Lambda Hooks), document chaining supports up to 10 uninterrupted chained documents, repeat last answer using REPEAT document included in QNAUtility package, ‘previous’ and ‘navigation’ session attributes are now encapsulated in the session variable ‘qnabotcontext’ to simplify Amazon Connect contact flow design, query based on document Qid using question syntax ‘QID::<qid>’. 
+
+* October 2020 (v4.3.0) – Amazon Connect integration wizard in Content Designer, 4-node Elasticsearch domain support for improved fault tolerance, Elicit Response bot support for confirmation responses using phone keypad 1 = yes 2 = no, Security improvements in API Gateway, ID token values removed from session event after validation and redacted from logging, Setting to limit number of Kendra fallback search results, Setting to enable signed URLs for S3 documents in Kendra search results. 
+
+* December 2020 (v4.4.0) – Elasticsearch updated to v7.9, detection for Slack client and Handlebars support for Slack specific markdown answers, support for Alexa re-prompts, new Bot Router feature (preview), new VPC deployment template (preview). 
 
 For a description of these features be sure to checkout the blog post at [New Features](https://aws.amazon.com/blogs/machine-learning/creating-a-question-and-answer-bot-with-amazon-lex-and-amazon-alexa/#new-features-log)
+
+
+
+
 
 [*^ back to top*](#solar-association-deploying-and-customizing-a-ready-made-question-and-answer-bot)
 
