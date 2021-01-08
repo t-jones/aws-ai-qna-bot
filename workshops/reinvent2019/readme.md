@@ -665,7 +665,7 @@ To do this we are going to use a public api from [NASA API](https://api.nasa.gov
 to obtain information on Solar Flares.
 
 
-[NASA API Example](https://api.nasa.gov/DONKI/FLR?startDate=2020-01-01&endDate=2019-12-30&api_key=DEMO_KEY "Example call")
+[NASA API Example](https://api.nasa.gov/DONKI/FLR?startDate=2020-01-01&endDate=2020-12-30&api_key=DEMO_KEY "Example call")
 
 The API takes two parameters, startDate and endDate. endDate defaults to current UTC Time 
 so we can leave this empty unless we want to provide a question and answer for a specific
