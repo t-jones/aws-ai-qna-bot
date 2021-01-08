@@ -1133,14 +1133,30 @@ g) Invoke the input "reset language" and then 'Tell me about the Sun'. You shoul
 
 ## Step 8 - New Features:
 
-QnABot version 2.4.0 provides some significant new features.
 
-November 2019 (v2.4.0) – Customizable configuration settings, minimized need to rebuild Lex bot when adding new content, 
-improved accuracy using keyword filters, configurable response when answer isn’t found, improved handling of user 
-feedback with integrated thumbs up/down buttons in web client, automated question testing in Content Designer, 
-support variable substitution and conditional answers using ‘handlebars’ templates in Content Designer.
+* November 2019 (v2.4.0) – Customizable configuration settings, minimized need to rebuild Lex bot when adding new content, improved accuracy using keyword filters, configurable response when answer isn’t found, improved handling of user feedback with integrated thumbs up/down buttons in web client, automated question testing in Content Designer, support variable substitution and conditional answers using ‘handlebars’ templates in Content Designer.
+
+* February 2020 (v2.6.0) – Use Amazon Kendra to find answers from document sources when a curated answer can’t be found in the QnABot Elastic Search index,  and introducing support for interaction in multiple languages.
+
+* March 2020 (v3.0.0) – New ContentDesigner settings menu for changing QnABot configuration, new Elicit Response feature allows QnABot to support data collection and triage by asking questions and processing the answers,  new ‘Document Chaining’ rules allow QnABot to automatically advance to the next question with support for conditional branching, interaction in multiple languages now enhanced with automatic translations and support for multiple language Alexa voice skills, and the ability to simplify tuning by disabling use of the answer field in scoring results.
+
+* April 2020 (v3.0.3) – Improved concurrency scaling using Lex versions and aliases, extensible Document Chaining rules using Lambda functions, redact sensitive information from QnABot logs and metrics using configurable regular expressions, new example package for using Amazon Connect call-back to transfer QnABot user to a human.
+
+* June 2020 (v4.0.0) – Update to Elasticsearch 7.4, improved question matching accuracy and tuning, tolerance for typos and minor spelling errors with fuzzy matching setting, easier troubleshooting when using voice or multi-language support with new debug setting, SSML support when using Amazon Connect, improvements to Amazon Kendra integration, new QNAFreeText feature to capture free-form input when using ElicitResponse, full upgrade support without data loss when upgrading from previous versions.
+
+* July 2020 (v4.1.0) – Encryption at rest installation option, private installation option requires Cognito user authentication for web client access, option to enforce user identity token verification, Amazon Kendra integration supports ‘best answer’ and bolded highlights in markdown responses, sentiment is now detected and made available to use in conditional chaining rules / handlebars / lambda hooks, the new QNAFreeText feature now provides additional ‘Sentiment’ slot value, Kibana dashboard now shows sentiment distribution in the requests histogram and provides more fine grain identification of Amazon Lex client types (Lex Web UI, Amazon Connect, Twilio), ElicitResponse state is now encapsulated in a single session variable ‘qnabotcontext’ to simplify Amazon Connect contact flow design when using ElicitResponse, new session attributes now provided for clients (eg Amazon Connect) to use – qnabot_qid and qnabot_gotanswer.
+
+* August 2020 (v4.2.0) – Amazon Kendra NLP available as optional alternative to Elasticsearch queries for better accuracy and easier tuning, Kendra fallback supports shorter responses when using voice channels, Elasticsearch updated to v7.7, new handlebars ‘getSessionAttr’ helper function, document chaining rule Lambda functions can set session attributes by returning modified event object (like Lambda Hooks), document chaining supports up to 10 uninterrupted chained documents, repeat last answer using REPEAT document included in QNAUtility package, ‘previous’ and ‘navigation’ session attributes are now encapsulated in the session variable ‘qnabotcontext’ to simplify Amazon Connect contact flow design, query based on document Qid using question syntax ‘QID::<qid>’. 
+
+* October 2020 (v4.3.0) – Amazon Connect integration wizard in Content Designer, 4-node Elasticsearch domain support for improved fault tolerance, Elicit Response bot support for confirmation responses using phone keypad 1 = yes 2 = no, Security improvements in API Gateway, ID token values removed from session event after validation and redacted from logging, Setting to limit number of Kendra fallback search results, Setting to enable signed URLs for S3 documents in Kendra search results. 
+
+* December 2020 (v4.4.0) – Elasticsearch updated to v7.9, detection for Slack client and Handlebars support for Slack specific markdown answers, support for Alexa re-prompts, new Bot Router feature (preview), new VPC deployment template (preview). 
 
 For a description of these features be sure to checkout the blog post at [New Features](https://aws.amazon.com/blogs/machine-learning/creating-a-question-and-answer-bot-with-amazon-lex-and-amazon-alexa/#new-features-log)
+
+
+
+
 
 [*^ back to top*](#solar-association-deploying-and-customizing-a-ready-made-question-and-answer-bot)
 
