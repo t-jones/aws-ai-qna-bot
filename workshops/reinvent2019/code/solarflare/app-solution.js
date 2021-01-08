@@ -13,9 +13,9 @@ async function handleQuery(event) {
 
   try {
     debug("Calling via axios");
-    const finalUrl = baseurl + '?startDate=2017-01-01' + '&api_key=' + process.env.api_key;
+    const finalUrl = baseurl + '?startDate=2020-01-01' + '&api_key=' + process.env.api_key;
     let res = await axios(finalUrl, axiosConfig);
-    debug("RESPONSE RECEIVED: ", JSON.stringify(res.data, null, 2));
+    console.log("RESPONSE RECEIVED: ", JSON.stringify(res.data, null, 2));
 
     // if lambdahook argument requests last solar flares, walk the returned flares up to
     // count provided adding to output using markdown
@@ -81,7 +81,7 @@ async function handleQuery(event) {
         debug('recent flares not reported in the last 30 days');
       }
     }
-    debug("RETURNING: " + JSON.stringify(event, null, 2));
+    console.log("RETURNING: " + JSON.stringify(event, null, 2));
     return event;
   } catch (err) {
     debug("ERROR: " + err);
@@ -91,7 +91,7 @@ async function handleQuery(event) {
 }
 
 exports.lambdaHandler = async (event, context) => {
-  debug("Input event: " + JSON.stringify(event,null,2));
+  console.log("Input event: " + JSON.stringify(event,null,2));
   debug("calling handleQuery");
   return await handleQuery(event);
 };

@@ -36,7 +36,7 @@ async function handleQuery(event) {
      * recent solar flares have occurred.
      */
 
-    debug("returning: " + JSON.stringify(event, null, 2));
+    console.log("returning: " + JSON.stringify(event, null, 2));
     return event;
 
   } catch (err) {
@@ -47,7 +47,7 @@ async function handleQuery(event) {
 }
 
 exports.lambdaHandler = async (event, context) => {
-  debug('input event: ' + JSON.stringify(event, null, 2));
+  console.log('input event: ' + JSON.stringify(event, null, 2));
   return await handleQuery(event);
 };
 

@@ -717,7 +717,7 @@ code provided below.
     debug("Calling via axios");
     const finalUrl = baseurl + '?startDate=2020-01-01' + '&api_key=' + process.env.api_key;
     let res = await axios(finalUrl, axiosConfig);
-    debug("RESPONSE RECEIVED: ", JSON.stringify(res.data, null, 2));
+    console.log("RESPONSE RECEIVED: ", JSON.stringify(res.data, null, 2));
 </pre>
 
 #### TODO 2 Check for the existence of an argument that indicates how many recent solar flares should be returned
@@ -779,7 +779,7 @@ code provided below.
       let oneMonthAgo = moment().subtract(30, 'days');
       debug('computed month ago: ' + oneMonthAgo);
       res.data.forEach((o) => {
-        debug(`reported event time: ${o.beginime}`);
+        debug(`reported event time: ${o.beginTime}`);
         let beginTime = moment(o.beginTime);
         debug('parsed beginTime: ' + beginTime);
         if (beginTime > oneMonthAgo) {
@@ -798,13 +798,7 @@ code provided below.
     
 ###  Test your code for valid syntax
 
-1) Make sure your nodejs version is version 8.12.0 or higher and sam are available
-<pre>
-cd ~/environment/aws-ai-qna-bot/workshops/reinvent2019/scripts
-source ./update-nodejs-version.sh
-</pre>
-
-2) Run tests to validate syntax
+* Run tests to validate syntax
 
 <pre>
 cd ~/environment/aws-ai-qna-bot/workshops/reinvent2019/code/solarflare
