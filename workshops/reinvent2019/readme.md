@@ -798,13 +798,7 @@ code provided below.
     
 ###  Test your code for valid syntax
 
-1) Make sure your nodejs version is version 8.12.0 or higher and sam are available
-<pre>
-cd ~/environment/aws-ai-qna-bot/workshops/reinvent2019/scripts
-source ./update-nodejs-version.sh
-</pre>
-
-2) Run tests to validate syntax
+* Run tests to validate syntax
 
 <pre>
 cd ~/environment/aws-ai-qna-bot/workshops/reinvent2019/code/solarflare
