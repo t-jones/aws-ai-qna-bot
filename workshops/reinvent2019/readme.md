@@ -717,7 +717,7 @@ code provided below.
     debug("Calling via axios");
     const finalUrl = baseurl + '?startDate=2020-01-01' + '&api_key=' + process.env.api_key;
     let res = await axios(finalUrl, axiosConfig);
-    debug("RESPONSE RECEIVED: ", JSON.stringify(res.data, null, 2));
+    console.log("RESPONSE RECEIVED: ", JSON.stringify(res.data, null, 2));
 </pre>
 
 #### TODO 2 Check for the existence of an argument that indicates how many recent solar flares should be returned
