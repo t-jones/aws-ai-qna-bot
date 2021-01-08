@@ -665,7 +665,7 @@ To do this we are going to use a public api from [NASA API](https://api.nasa.gov
 to obtain information on Solar Flares.
 
 
-[NASA API Example](https://api.nasa.gov/DONKI/FLR?startDate=2017-01-01&endDate=2019-12-30&api_key=DEMO_KEY "Example call")
+[NASA API Example](https://api.nasa.gov/DONKI/FLR?startDate=2020-01-01&endDate=2019-12-30&api_key=DEMO_KEY "Example call")
 
 The API takes two parameters, startDate and endDate. endDate defaults to current UTC Time 
 so we can leave this empty unless we want to provide a question and answer for a specific
@@ -715,7 +715,7 @@ code provided below.
 #### TODO 1 Calling the NASA API after setting up the parameters used in the url. Log the output if debug is enabled.
 <pre>
     debug("Calling via axios");
-    const finalUrl = baseurl + '?startDate=2017-01-01' + '&api_key=' + process.env.api_key;
+    const finalUrl = baseurl + '?startDate=2020-01-01' + '&api_key=' + process.env.api_key;
     let res = await axios(finalUrl, axiosConfig);
     debug("RESPONSE RECEIVED: ", JSON.stringify(res.data, null, 2));
 </pre>
