@@ -779,7 +779,7 @@ code provided below.
       let oneMonthAgo = moment().subtract(30, 'days');
       debug('computed month ago: ' + oneMonthAgo);
       res.data.forEach((o) => {
-        debug(`reported event time: ${o.beginime}`);
+        debug(`reported event time: ${o.beginTime}`);
         let beginTime = moment(o.beginTime);
         debug('parsed beginTime: ' + beginTime);
         if (beginTime > oneMonthAgo) {
