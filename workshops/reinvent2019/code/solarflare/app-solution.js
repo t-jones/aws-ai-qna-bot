@@ -13,7 +13,7 @@ async function handleQuery(event) {
 
   try {
     debug("Calling via axios");
-    const finalUrl = baseurl + '?startDate=2017-01-01' + '&api_key=' + process.env.api_key;
+    const finalUrl = baseurl + '?startDate=2020-01-01' + '&api_key=' + process.env.api_key;
     let res = await axios(finalUrl, axiosConfig);
     console.log("RESPONSE RECEIVED: ", JSON.stringify(res.data, null, 2));
 
