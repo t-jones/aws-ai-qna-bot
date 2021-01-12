@@ -932,32 +932,19 @@ permission to access this S3 buckert.
 
 ***Make sure this new data source is synced before proceeding.***
 
-5) Set Custom Property 'ALT_SEARCH_KENDRA_INDEXES'
+5) In the content designer page, under **Tools**, choose **Settings**.
 
-This custom property will contain a string value that specifies an array of 
-Kendra indexes to search. At least one index must be specified. Until this custom property 
-is set in QnABot, use of Kendra as a fallback mechanism will return an error. 
-
-You can override this setting using SSM Parameter Store to add a new key/value pair as a custom property. 
-Find your custom property name from the QnABot CF stack outputs. The key in the QnABot CF stack outputs is 
-'CustomSettingsSSMParameterName'. If will have a value similar to 
+Update the QnABot setting **ALT_SEARCH_KENDRA_INDEXES** to specify one or more Amazon Kendra indexes to use for fallback searches. The value of **ALT_SEARCH_KENDRA_INDEXES** should be either a single index id, or an array of quoted index ids, for example:
 
 ```
-CFN-CustomQnABotSettings-EOVHQJcYx9Ms
-```
-
-Find your CustomSettingsSSMParameterName property name in CloudFormation. Open the AWS Systems Manager console. 
-Navigate to ParameterStore. Filter the list using your custom property name name. Open and Edit the parameter. 
-
-Add the following content but use the Kendra IndexId rather than the ID below. This is a json object. You may already
-have set a new custom property if you performed step 10 below. As such you may need to 
-add to the object a new key/value pair rather than replacing the entire string. 
+857710ab-example-do-not-copy
 
 ```
-{"ALT_SEARCH_KENDRA_INDEXES":"[\"857710ab-9637-4a46-910f-9a1456d02596\"]"}
-```
+OR 
 
-**Note the Escaped Quote marks around the array of Kendra index ids are required**
+```
+["857710ab-example1-do-not-copy","857710ab-example2-do-not-copy"]
+```
 
 **Don't forget to use your Kendra Index ID rather than the one in the sample**
 
@@ -1012,25 +999,11 @@ the feature. Step 2 loads in two questions from this extension that allow the us
 defaults supplied in this question are English, Spanish, French, German, and Italian. For this step in the workshop
 perform all 3. 
 
-1) Custom Property
+1) In the content designer page, under **Tools**, choose **Settings**.
 
-a) QnABot uses a property named ENABLE_MULTI_LANGUAGE_SUPPORT. It is a boolean and has a default value of false. 
-You can override this setting using SSM Parameter Store to add a new key/value pair as a custom property. 
-Find your custom property name from the QnABot CF stack outputs. The key in the QnABot CF stack outputs is 
-'CustomSettingsSSMParameterName'. If will have a value similar to 
+a) For the **ENABLE_MULTI_LANGUAGE_SUPPORT** parameter, change the value from **false** to **true**.
 
-```
-CFN-CustomQnABotSettings-EOVHQJcYx9Ms
-```
-
-b) Find your CustomSettingsSSMParameterName property name in CloudFormation. Open the AWS Systems Manager console. 
-Navigate to ParameterStore. Filter the list using your custom property name name. Open and Edit the parameter. 
-
-Set the value to be the following and save the changes.
-
-```
-{"ENABLE_MULTI_LANGUAGE_SUPPORT":true}
-```
+b) Choose **Save**.
 
 2) Use the Designer UI to import the Sample/Extension named Language / Multiple Language Support. 
 
