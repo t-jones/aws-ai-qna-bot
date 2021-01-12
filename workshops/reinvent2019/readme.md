@@ -307,7 +307,7 @@ Your AWS Cloud9 environment will begin to be setup. Once its ready continue with
     * Under getting started select Clone Git Repository
     * In the terminal window that pops up complete the clone command to be
     <pre>
-    git clone https://github.com/aws-samples/aws-ai-qna-bot.git
+    git clone https://github.com/t-jones/aws-ai-qna-bot.git
     </pre>
 
 2) Run a script in your Cloud9 IDE that runs CloudFormation to setup an S3 bucket to host the website and uploads two files
