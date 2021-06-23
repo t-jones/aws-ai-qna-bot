@@ -38,7 +38,7 @@ exports.parse=async function(req){
     };
     // set userPreferredLocale from Alexa request
     const alexa_locale = _.get(event,'request.locale').split("-")[0];
-    out.session.userPreferredLocale = alexa_locale;
+    _.set(out, 'session.userPreferredLocale', alexa_locale);
     console.log("Set userPreferredLocale:", out.session.userPreferredLocale);
     var welcome_message;
     var stop_message;
